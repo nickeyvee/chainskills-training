@@ -24,14 +24,14 @@
     <h1 class="center-align">ChainList</h1>
     <div class="row">
       <div class="col s2">
-        <span class="flow-text">Balance</span>
+        <p id="accountBalance">Balance</p>
       </div>
-      <div class="col s2 offset-s8">
-        <span class="flow-text">Account</span>
+      <div class="col s4 offset-s5">
+        <p id="account" style="text-align: right;">Account</p>
       </div>
     </div>
     <div class="row">
-      <div class="col s4 offset-s9">
+      <div class="col s3 offset-s9">
         <button class="waves-effect waves-light btn modal-trigger" data-target="modal1" onclick="$('#modal1').modal('open');" >Sell an Article</button>
       </div>
     </div>
@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <div id="articleTemplate" style="display: none;">
+  <div id="articlesTemplate" style="display: none;">
     <div class="row-lg-12">
       <div class="panel panel-default panel-article">
         <div class="panel-heading">
