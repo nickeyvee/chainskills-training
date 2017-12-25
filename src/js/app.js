@@ -43,7 +43,35 @@ App = {
       App.contracts.Chainlist = TruffleContract(chainListArtifact);
 
       App.contracts.Chainlist.setProvider(App.web3Provider);
+      console.log("reloaded articles");
+      return App.reloadArticles();
     })
+  },
+
+  reloadArticles: function() {
+    App.displayAccountInfo();
+
+    App.contracts.Chainlist.deployed()
+      .then( instance => {
+        return instance.getArticle.call();
+      })
+      .then( article => {
+        if(article[0] == 0x0) {
+          return;
+        }
+
+        const articlesRow = $('#articlesRow');
+        articlesRow.empty();
+
+        const articleTemplate = $('#articlesTemplate');
+        articleTemplate.find('.panel-title');
+        articleTemplate.find('.article-description').text(article[1]);
+        articleTemplate.find('.article-description').text(article[2]);
+        articleTemplate.find('.article-price').text(web3.fromWei(article[3],
+          'ether'));
+
+        articlesRow.append(articleTemplate);
+      })
   }
 };
 
