@@ -26,25 +26,27 @@
       <div class="col s2">
         <p id="accountBalance">Balance</p>
       </div>
-      <div class="col s4 offset-s5">
+      <div class="col s4 push-s6">
         <p id="account" style="text-align: right;">Account</p>
       </div>
     </div>
     <div class="row">
-      <div class="col s3 offset-s9">
-        <button class="waves-effect waves-light btn modal-trigger" data-target="modal1" onclick="$('#modal1').modal('open');" >Sell an Article</button>
+      <div class="right-align" style="margin-right: 10px">
+        <button class="waves-effect waves-light btn modal-trigger" data-target="modal1" onclick="$('#modal1').modal('open');">Sell an Article</button>
       </div>
     </div>
 
-    <div id="articlesRow" class="row">
-      <!-- ARTICLES LOAD HERE -->
+    <div class="row">
+      <div id="articlesRow" class="col s12 m12">
+        <!-- ARTICLES LOAD HERE -->
+      </div>
     </div>
   </div>
 
   <div id="articlesTemplate" style="display: none;">
-    <div class="row-lg-12">
-      <div class="panel panel-default panel-article">
-        <div class="panel-heading">
+    <div class="card teal lighten-4">
+      <div class="card-content black-text">
+        <div class="card-title">
           <h3 class="panel-title"></h3>
         </div>
         <div class="panel-body">
@@ -93,7 +95,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="">Submit</button>
+          <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.sellArticle();">Submit</button>
           <button type="button" class="btn" data-dismiss="modal" onclick="$('#modal1').modal('close');">Close</button>
         </div>
       </div>

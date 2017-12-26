@@ -43,9 +43,8 @@ App = {
       App.contracts.Chainlist = TruffleContract(chainListArtifact);
 
       App.contracts.Chainlist.setProvider(App.web3Provider);
-      console.log("reloaded articles");
       return App.reloadArticles();
-    })
+    });
   },
 
   reloadArticles: function() {
@@ -56,21 +55,60 @@ App = {
         return instance.getArticle.call();
       })
       .then( article => {
+        console.log(article);
         if(article[0] == 0x0) {
+          console.log("function terminated..");
           return;
         }
 
         const articlesRow = $('#articlesRow');
-        articlesRow.empty();
+        // articlesRow.empty();
 
         const articleTemplate = $('#articlesTemplate');
-        articleTemplate.find('.panel-title');
-        articleTemplate.find('.article-description').text(article[1]);
+        articleTemplate.find('.panel-title').text(article[1]);
         articleTemplate.find('.article-description').text(article[2]);
         articleTemplate.find('.article-price').text(web3.fromWei(article[3],
           'ether'));
 
-        articlesRow.append(articleTemplate);
+        let seller = article[0];
+        if( seller == App.account) {
+          seller = "You";
+        }
+
+
+        articleTemplate.find('.article-seller').text(seller);
+
+        // add the new article
+        articlesRow.append(articleTemplate.html());
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  },
+
+  sellArticle: function() {
+    const _article_name = $('#article_name').val();
+    const _description = $('#article_description').val();
+    const _price = web3.toWei(parseInt($('#article_price').val() || 0));
+
+    if((_article_name.trim() == '') || (_price == 0)) {
+      return false;
+    }
+
+    App.contracts.Chainlist.deployed()
+      .then( instance => {
+        return instance.sellArticle(_article_name, _description, _price, {
+          from: App.account,
+          gas: 500000
+        })
+      })
+      .then(result => {
+        App.reloadArticles();
+        // close our modal-dialog
+        $('#modal1').modal('close');
+      })
+      .then(err => {
+        console.log(err);
       })
   }
 };
