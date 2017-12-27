@@ -3,13 +3,13 @@ App = {
   contracts: {},
   account: 0x0,
 
-  init: function() {
+  init: function () {
     return App.initWeb3();
   },
 
-  initWeb3: function() {
+  initWeb3: function () {
 
-    if(typeof web3 !== 'undefined') {
+    if (typeof web3 !== 'undefined') {
       App.web3Provider = web3.currentProvider;
       web3 = new Web3(web3.currentProvider);
     } else {
@@ -21,14 +21,14 @@ App = {
     return App.initContract();
   },
 
-  displayAccountInfo: function() {
-    web3.eth.getCoinbase(( err, account ) => {
-      if(err === null) {
+  displayAccountInfo: function () {
+    web3.eth.getCoinbase((err, account) => {
+      if (err === null) {
         console.log("no error");
         App.account = account;
         $('#account').text(account);
         web3.eth.getBalance(account, (err, balance) => {
-          if(err === null) {
+          if (err === null) {
             $('#accountBalance').text(web3.fromWei(balance, 'ether') + "ETH");
           }
         })
@@ -38,26 +38,30 @@ App = {
     })
   },
 
-  initContract: function() {
+  initContract: function () {
     $.getJSON('Chainlist.json', chainListArtifact => {
       App.contracts.Chainlist = TruffleContract(chainListArtifact);
 
       App.contracts.Chainlist.setProvider(App.web3Provider);
+
+      // YOU MUST REGISTER YOUR CONTRACT EVENTS HERE ! ! !
+      App.listenToEvents();
+
       return App.reloadArticles();
     });
   },
 
-  reloadArticles: function() {
+  reloadArticles: function () {
     App.displayAccountInfo();
 
     App.contracts.Chainlist.deployed()
-      .then( instance => {
+      .then(instance => {
         return instance.getArticle.call();
       })
-      .then( article => {
+      .then(article => {
         console.log(article);
-        if(article[0] == 0x0) {
-          console.log("function terminated..");
+        if (article[0] == 0x0) {
+          // console.log("function terminated..");
           return;
         }
 
@@ -71,7 +75,7 @@ App = {
           'ether'));
 
         let seller = article[0];
-        if( seller == App.account) {
+        if (seller == App.account) {
           seller = "You";
         }
 
@@ -86,35 +90,56 @@ App = {
       });
   },
 
-  sellArticle: function() {
+  sellArticle: function () {
+
     const _article_name = $('#article_name').val();
     const _description = $('#article_description').val();
     const _price = web3.toWei(parseInt($('#article_price').val() || 0));
 
-    if((_article_name.trim() == '') || (_price == 0)) {
+    if ((_article_name.trim() == '') || (_price == 0)) {
       return false;
     }
 
     App.contracts.Chainlist.deployed()
-      .then( instance => {
+      .then(instance => {
         return instance.sellArticle(_article_name, _description, _price, {
           from: App.account,
           gas: 500000
         })
       })
       .then(result => {
-        App.reloadArticles();
         // close our modal-dialog
         $('#modal1').modal('close');
       })
-      .then(err => {
-        console.log(err);
-      })
+      .catch(err => {
+        console.log(err.message);
+      });
+  },
+
+  listenToEvents: function () {
+    console.log('Solidity contract event fired..');
+
+    App.contracts.Chainlist.deployed()
+      .then(instance => {
+        instance.sellArticleEvent({}, {
+          fromBlock: 0,
+          toBlock: 'latest'
+        }).watch((err, event) => {
+          console.log("toast should show");
+          Materialize.toast(`${ event.args._name } is for sale`, 4000);
+          // our code to excute when a new article is added.
+          //
+          // add a custom toast here that tells
+          // us when a new listing is added.
+
+          App.reloadArticles();
+        });
+      });
   }
 };
 
-$(function() {
-  $(window).load(function() {
+$(function () {
+  $(window).load(function () {
     console.log("app init..")
     App.init();
   });
