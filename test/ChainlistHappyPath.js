@@ -32,7 +32,7 @@ contract('Chainlist', function (accounts) {
                 return Chainlist.deployed()
                 .then(instance => {
                         chainListInstance = instance;
-                        watcher = chainListInstance.sellArticleEvent();
+                        watcher = chainListInstance.SellArticleEvent();
                         return chainListInstance.sellArticle(
                                 articleName,
                                 articleDescription,

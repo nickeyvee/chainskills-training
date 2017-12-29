@@ -24,7 +24,6 @@ App = {
   displayAccountInfo: function () {
     web3.eth.getCoinbase((err, account) => {
       if (err === null) {
-        console.log("no error");
         App.account = account;
         $('#account').text(account);
         web3.eth.getBalance(account, (err, balance) => {
@@ -59,14 +58,13 @@ App = {
         return instance.getArticle.call();
       })
       .then(article => {
-        console.log(article);
         if (article[0] == 0x0) {
-          // console.log("function terminated..");
+          console.log("function terminated..");
           return;
         }
 
         const articlesRow = $('#articlesRow');
-        // articlesRow.empty();
+        articlesRow.empty();
 
         const articleTemplate = $('#articlesTemplate');
         articleTemplate.find('.panel-title').text(article[1]);
@@ -92,9 +90,9 @@ App = {
 
   sellArticle: function () {
 
-    const _article_name = $('#article_name').val();
-    const _description = $('#article_description').val();
-    const _price = web3.toWei(parseInt($('#article_price').val() || 0));
+    let _article_name = $('#article_name').val();
+    let _description = $('#article_description').val();
+    let _price = web3.toWei(parseInt($('#article_price').val() || 0));
 
     if ((_article_name.trim() == '') || (_price == 0)) {
       return false;
@@ -108,25 +106,26 @@ App = {
         })
       })
       .then(result => {
-        // close our modal-dialog
-        $('#modal1').modal('close');
+        
       })
       .catch(err => {
-        console.log(err.message);
+        console.log(err);
       });
   },
 
   listenToEvents: function () {
-    console.log('Solidity contract event fired..');
 
     App.contracts.Chainlist.deployed()
       .then(instance => {
-        instance.sellArticleEvent({}, {
-          fromBlock: 0,
-          toBlock: 'latest'
-        }).watch((err, event) => {
-          console.log("toast should show");
-          Materialize.toast(`${ event.args._name } is for sale`, 4000);
+        instance.SellArticleEvent({}, {
+          fromBlock: 0
+        }).watch((err, data) => {
+
+          console.log(data);
+
+          $('#modal1').modal('close');
+
+          Materialize.toast(`${ data.args._name } was added.`, 4000);
           // our code to excute when a new article is added.
           //
           // add a custom toast here that tells
@@ -140,7 +139,6 @@ App = {
 
 $(function () {
   $(window).load(function () {
-    console.log("app init..")
     App.init();
   });
 });
