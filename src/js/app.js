@@ -1,4 +1,5 @@
 App = {
+  onInitPage: true,
   web3Provider: null,
   contracts: {},
   account: 0x0,
@@ -64,7 +65,7 @@ App = {
         }
 
         const articlesRow = $('#articlesRow');
-        articlesRow.empty();
+        // articlesRow.empty();
 
         const articleTemplate = $('#articlesTemplate');
         articleTemplate.find('.panel-title').text(article[1]);
@@ -76,7 +77,6 @@ App = {
         if (seller == App.account) {
           seller = "You";
         }
-
 
         articleTemplate.find('.article-seller').text(seller);
 
@@ -106,7 +106,7 @@ App = {
         })
       })
       .then(result => {
-        
+
       })
       .catch(err => {
         console.log(err);
@@ -120,25 +120,27 @@ App = {
         instance.SellArticleEvent({}, {
           fromBlock: 0
         }).watch((err, data) => {
-
-          console.log(data);
-
+          // our code to excute when a new article is added.
           $('#modal1').modal('close');
 
-          Materialize.toast(`${ data.args._name } was added.`, 4000);
-          // our code to excute when a new article is added.
-          //
-          // add a custom toast here that tells
-          // us when a new listing is added.
-
+          // Condition will prevent toast messages when page is loaded.
+          if (!App.onInitPage) {
+            Materialize.toast(`${data.args._name} was added.`, 4000);
+          }
           App.reloadArticles();
         });
-      });
+      })
   }
 };
 
 $(function () {
   $(window).load(function () {
     App.init();
+
+    setTimeout(() => {
+      // changes our flag variable so our toast messages show.
+      // (TEMPORARY FIX)
+      App.onInitPage = false;
+    },2000);
   });
 });
