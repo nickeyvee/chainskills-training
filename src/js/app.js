@@ -90,23 +90,24 @@ App = {
 
   sellArticle: function () {
 
-    let _article_name = $('#article_name').val();
-    let _description = $('#article_description').val();
-    let _price = web3.toWei(parseInt($('#article_price').val() || 0));
+    const article_name = $('#article_name').val();
+    const _description = $('#article_description').val();
+    const _price = web3.toWei(parseInt($('#article_price').val() || 0));
 
-    if ((_article_name.trim() == '') || (_price == 0)) {
+    if ((article_name.trim() == '') || (_price == 0)) {
       return false;
     }
 
     App.contracts.Chainlist.deployed()
       .then(instance => {
-        return instance.sellArticle(_article_name, _description, _price, {
+        return instance.sellArticle(article_name, _description, _price, {
           from: App.account,
           gas: 500000
         })
       })
       .then(result => {
-
+        console.log(article_name);
+        Materialize.toast(`${article_name} was added.`, 4000);
       })
       .catch(err => {
         console.log(err);
@@ -117,16 +118,11 @@ App = {
 
     App.contracts.Chainlist.deployed()
       .then(instance => {
-        instance.SellArticleEvent({}, {
-          fromBlock: 0
-        }).watch((err, data) => {
+        instance.SellArticleEvent({}, {})
+        .watch((err, data) => {
           // our code to excute when a new article is added.
           $('#modal1').modal('close');
 
-          // Condition will prevent toast messages when page is loaded.
-          if (!App.onInitPage) {
-            Materialize.toast(`${data.args._name} was added.`, 4000);
-          }
           App.reloadArticles();
         });
       })
@@ -136,11 +132,5 @@ App = {
 $(function () {
   $(window).load(function () {
     App.init();
-
-    setTimeout(() => {
-      // changes our flag variable so our toast messages show.
-      // (TEMPORARY FIX)
-      App.onInitPage = false;
-    },2000);
   });
 });
