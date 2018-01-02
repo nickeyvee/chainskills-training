@@ -13,6 +13,7 @@ contract('Chainlist', function (accounts) {
 
   let chainListInstance;
   let seller = accounts[1];
+  let buyer = accounts[2];
   let articleName = "article 1";
   let articleDescription = "Description for article 1";
   let articlePrice = 10;
@@ -58,9 +59,10 @@ contract('Chainlist', function (accounts) {
       return chainListInstance.getArticle.call();
     }).then(data => {
       assert.equal(data[0], seller, "seller must be " + seller);
-      assert.equal(data[1], articleName, "article name must be " + articleName);
-      assert.equal(data[2], articleDescription, "article description must be " + articleDescription);
-      assert.equal(data[3].toNumber(), web3.toWei(articlePrice, "ether"), "article price must be " + web3.toWei(articlePrice, "ether"));
+      assert.equal(data[1], 0x0, "buyer must be empty");      
+      assert.equal(data[2], articleName, "article name must be " + articleName);
+      assert.equal(data[3], articleDescription, "article description must be " + articleDescription);
+      assert.equal(data[4].toNumber(), web3.toWei(articlePrice, "ether"), "article price must be " + web3.toWei(articlePrice, "ether"));
     });
   });
 });
