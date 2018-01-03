@@ -66,11 +66,13 @@ App = {
 
         const articlesRow = $('#articlesRow');
         // articlesRow.empty();
+        console.log(article)
+        
 
         const articleTemplate = $('#articlesTemplate');
-        articleTemplate.find('.panel-title').text(article[1]);
-        articleTemplate.find('.article-description').text(article[2]);
-        articleTemplate.find('.article-price').text(web3.fromWei(article[3],
+        articleTemplate.find('.panel-title').text(article[2]);
+        articleTemplate.find('.article-description').text(article[3]);
+        articleTemplate.find('.article-price').text(web3.fromWei(article[4],
           'ether'));
 
         let seller = article[0];
